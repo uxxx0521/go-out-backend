@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
-import { BusinessService } from '../services/businessService';
 import { CookieHelper } from '../utils/cookieHelper';
 import { AuthRequest } from '../types/auth';
-import { ApiResponse } from '../types/api';
 
 export class AuthController {
   /**
@@ -21,6 +19,15 @@ export class AuthController {
         res.status(400).json({
           success: false,
           error: result.error
+        });
+        return;
+      }
+
+      // Type guard: Ensure data exists when success is true
+      if (!result.data || !result.data.token || !result.data.business) {
+        res.status(500).json({
+          success: false,
+          error: 'Invalid response from authentication service'
         });
         return;
       }
@@ -57,6 +64,15 @@ export class AuthController {
         res.status(401).json({
           success: false,
           error: result.error
+        });
+        return;
+      }
+
+      // Type guard: Ensure data exists when success is true
+      if (!result.data || !result.data.token || !result.data.business) {
+        res.status(500).json({
+          success: false,
+          error: 'Invalid response from authentication service'
         });
         return;
       }
@@ -124,7 +140,7 @@ export class AuthController {
       }
 
       // Get business profile using service
-      const business = await BusinessService.getBusinessProfile(businessId);
+      const business = await AuthService.getBusinessProfile(businessId);
 
       if (!business) {
         res.status(404).json({ 
@@ -170,6 +186,15 @@ export class AuthController {
         res.status(401).json({
           success: false,
           error: result.error
+        });
+        return;
+      }
+
+      // Type guard: Ensure data and token exist
+      if (!result.data || !result.data.token) {
+        res.status(500).json({
+          success: false,
+          error: 'Invalid response from authentication service'
         });
         return;
       }
