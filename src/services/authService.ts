@@ -1,5 +1,6 @@
 import { prisma } from '../app';
 import { hashPassword, comparePassword, generateBusinessToken } from '../utils/auth';
+import { handleError, isPrismaError, isPrismaErrorAlt,isPrismaUniqueConstraintError, logError } from '../utils/errorHandler';
 import { BusinessSignupData, AuthResult } from '../types/auth';
 
 export class AuthService {
@@ -89,12 +90,13 @@ export class AuthService {
     } catch (error) {
       console.error('❌ Create business account error:', error);
       
-      if (error.code === 'P2002') {
-        return {
-          success: false,
-          error: 'This email is already registered'
-        };
-      }
+     // Check for specific Prisma errors using the utility
+     if (isPrismaErrorAlt(error)) {
+      return {
+        success: false,
+        error: 'This email is already registered'
+      };
+    }
       
       return {
         success: false,
