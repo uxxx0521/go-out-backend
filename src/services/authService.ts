@@ -130,7 +130,7 @@ export class AuthService {
       }
 
       // Generate token
-      const token = generateBusinessToken(business.id);
+      const token = generateBusinessToken(business.id);  //util
 
       console.log(`🔐 Business signin: ${business.name} (${business.email})`);
 

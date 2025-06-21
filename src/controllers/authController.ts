@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
+import { BusinessService } from '../services/businessService';
 import { CookieHelper } from '../utils/cookieHelper';
 import { AuthRequest } from '../types/auth';
 
@@ -140,7 +141,7 @@ export class AuthController {
       }
 
       // Get business profile using service
-      const business = await AuthService.getBusinessProfile(businessId);
+      const business = await BusinessService.getBusinessProfile(businessId);
 
       if (!business) {
         res.status(404).json({ 
