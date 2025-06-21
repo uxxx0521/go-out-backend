@@ -16,7 +16,7 @@ router.get('/health', (req, res) => {
   });
 });
 
-// Register all route modules
+// All route modules
 router.use('/auth', authRoutes);
 router.use('/businesses', businessRoutes);
 router.use('/customers', customerRoutes);
