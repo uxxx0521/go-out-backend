@@ -1,0 +1,51 @@
+{
+  "name": "go-out-backend",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio",
+    "db:seed": "ts-node prisma/seed.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "loyalty",
+    "saas",
+    "restaurant"
+  ],
+  "author": "Chengzhe Liu",
+  "license": "ISC",
+  "description": "Backend for Go Out! Loyalty SaaS application",
+  "dependencies": {
+    "@prisma/client": "^6.9.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "prisma": "^6.9.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.0.3",
+    "eslint": "^9.29.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

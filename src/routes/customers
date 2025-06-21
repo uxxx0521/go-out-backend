@@ -1,0 +1,19 @@
+import express from 'express';
+import { CustomerController } from '../controllers/customerController';
+import { authenticateBusiness } from '../middleware/auth';
+
+const router = express.Router();
+
+// Customer Management Routes
+router.get('/', authenticateBusiness, CustomerController.getCustomers);
+router.get('/:customerId', authenticateBusiness, CustomerController.getCustomer);
+
+// Customer Actions (we'll add these controllers later)
+// router.post('/', authenticateBusiness, CustomerController.createCustomer);
+// router.put('/:customerId', authenticateBusiness, CustomerController.updateCustomer);
+// router.delete('/:customerId', authenticateBusiness, CustomerController.deleteCustomer);
+
+// Customer Communication
+// router.post('/:customerId/message', authenticateBusiness, CustomerController.sendMessage);
+
+export default router;

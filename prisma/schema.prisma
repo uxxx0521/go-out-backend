@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Business Profile
+  name        String
+  email       String   @unique
+  phone       String?
+  website     String?
+  description String?
+  logo        String?  // URL to logo image
+
+  // Address
+  address String?
+  city    String?
+  state   String?
+  zipCode String?
+  country String? @default("US")
+
+  // Authentication
+  password String
+  isVerified Boolean @default(false)
+  verificationToken String?
+
+  // Business Settings
+  timezone String @default("America/Los_Angeles")
+  
+  // Stamp Rules
+  stampsPerVisit    Int @default(1)
+  minSpendForStamp  Float @default(0.0)
+  maxStampsPerVisit Int @default(5)
+  
+  // Reward Rules
+  stampsForReward Int @default(10)
+  rewardType      String @default("Free Coffee")
+  rewardValue     Float @default(5.0)
+  
+  // Branding
+  primaryColor   String @default("#8b5cf6")
+  slogan         String @default("Collect your stamp card!")
+  fontStyle      String @default("modern")
+
+  // Relationships
+  customers        Customer[]
+  stampTransactions StampTransaction[]
+  rewards          Reward[]
+  promotions       Promotion[]
+  businessHours    BusinessHours[]
+
+  @@map("businesses")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Customer Info
+  phone       String  @unique
+  email       String?
+  firstName   String?
+  lastName    String?
+  
+  // Authentication
+  isVerified  Boolean @default(false)
+  lastOtpSent DateTime?
+
+  // Loyalty Stats
+  totalStamps   Int @default(0)
+  totalRewards  Int @default(0)
+  totalVisits   Int @default(0)
+  lastVisit     DateTime?
+
+  // Relationships
+  business         Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId       String
+  stampTransactions StampTransaction[]
+  rewards          Reward[]
+
+  @@map("customers")
+}
+
+model StampTransaction {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Transaction Details
+  stampsAwarded Int
+  qrId          String  @unique // Prevents duplicate QR usage
+  source        String  @default("qr_scan") // qr_scan, manual, promotion
+  notes         String?
+
+  // Relationships
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String
+
+  @@map("stamp_transactions")
+}
+
+model Reward {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  redeemedAt DateTime @default(now())
+
+  // Reward Details
+  type         String  // "Free Coffee", "10% Discount", etc.
+  value        Float   // Dollar value
+  description  String?
+  stampsUsed   Int     // How many stamps were redeemed
+
+  // Status
+  isRedeemed Boolean @default(false)
+  redeemedBy String? // Staff member who processed
+
+  // Relationships
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String
+
+  @@map("rewards")
+}
+
+model Promotion {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Campaign Details
+  title       String
+  message     String
+  type        String @default("announcement") // announcement, double_stamps, discount
+  
+  // Targeting
+  targetAudience String @default("all") // all, frequent, inactive, new
+  
+  // Scheduling
+  startsAt  DateTime?
+  expiresAt DateTime?
+  isActive  Boolean @default(true)
+  
+  // Tracking
+  sentCount    Int @default(0)
+  openedCount  Int @default(0)
+  clickedCount Int @default(0)
+
+  // Relationships
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String
+
+  @@map("promotions")
+}
+
+model BusinessHours {
+  id String @id @default(cuid())
+  
+  // Day and Hours
+  dayOfWeek Int // 0=Sunday, 1=Monday, etc.
+  isOpen    Boolean @default(true)
+  openTime  String? // "09:00"
+  closeTime String? // "17:00"
+  
+  // Special Dates
+  specialDate DateTime? // For holidays/special hours
+  isHoliday   Boolean @default(false)
+  holidayName String?
+
+  // Relationships
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String
+
+  @@map("business_hours")
+}
